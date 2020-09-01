@@ -22,6 +22,22 @@ trait Searchable
     private static $filterCache = [];
 
     /**
+     * Classes using this trait use $searchable to define searchable field
+     *
+     * @var array $searchable
+     */
+    // public $searchable = [];
+
+     /**
+     * Classes using this trait can override the filters executor by setting
+     * the $searchableFiltersExecutor property to a class implementing
+     * \Stickee\LaravelSearchEncryptedData\Contracts\FiltersExecutorInterface
+     *
+     * @var \Stickee\LaravelSearchEncryptedData\Contracts\FiltersExecutorInterface $searchableFiltersExecutor
+     */
+    // public $searchableFiltersExecutor = \App\MyCustomExecutor::class;
+
+    /**
      * Laravel trait boot method
      */
     public static function bootSearchable(): void
@@ -42,6 +58,18 @@ trait Searchable
         self::deleting(function (self $model) {
             $model->searchables()->delete();
         });
+    }
+
+    /**
+     * Get the columns to select for searching a particular field
+     *
+     * @param string $field The field to search
+     *
+     * @return string[]
+     */
+    public static function searchableGetColumns(string $field): array
+    {
+        return [$field];
     }
 
     /**

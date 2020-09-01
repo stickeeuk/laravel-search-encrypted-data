@@ -26,5 +26,6 @@ class TestModelCaseSensitive extends TestModel
         'first_name_starts_with_3' => [StartsWithCaseSensitive::class, 'first_name'],
         'first_name_starts_with_6' => [StartsWithCaseSensitive::class, 'first_name', 6],
         'email_equals' => [EqualsCaseSensitive::class, 'email'],
+        'computed_starts_with' => [StartsWithCaseSensitive::class, 'computed'],
     ];
 }

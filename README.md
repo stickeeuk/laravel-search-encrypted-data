@@ -12,6 +12,7 @@ This a composer module for searching encrypted data.
    - [Built in filters](#built-in-filters)
    - [Custom filters](#custom-filters)
    - [Custom search executor](#custom-search-executor)
+   - [Searching computed data](#searching-computed-data)
  - [Commands](#customisation)
    - [Update searchable](#update-searchable)
    - [Search](#search)
@@ -87,20 +88,27 @@ The search works via this process:
 1. A model defines one or more "filters" for each encrypted field that needs to be searched
 2. When a model is created or updated, each filter takes the value of the field it is associated with,
   canonicalises it and hashes the result (using app.key - if you change the key you will need to recreate all hashes using the supplied command)
-3. When a search is performed, the search string undergoes the same canonicalisation and hashing process for each filter, and the hash is searched for in the database
+3. When a search is performed using the `withSearchable` scope, the search string undergoes the same canonicalisation and hashing process for each filter, and the hash is searched for in the database
 4. All matching models are retrieved (in whole or in part) to remove false-positives
 5. The IDs are added to a `whereIn` on the query
+
+An example search would look like
+```
+$results = MyModel::withSearchable('first_name', 'test')->where('active', true)->get();
+```
+
+The first argument is the field name, the second is the search string.
 
 ### Adding filters to a model
 
 Filters are added as an array called "searchable" to the model, e.g.
 ```
 public $searchable = [
-      [StartsWith::class, 'first_name', 4],
-      [StartsWith::class, 'last_name'],
-      [Equals::class, 'email'],
-      [Custom::class, 'some_field', 'something', true, 123],
-    ];
+  [StartsWith::class, 'first_name', 4],
+  [StartsWith::class, 'last_name'],
+  [Equals::class, 'email'],
+  [Custom::class, 'some_field', 'something', true, 123],
+];
 ```
 
 The array can be numeric or associative - the key is called the `filterName` internally.
@@ -147,6 +155,25 @@ class MyModel extends Model implements SearchableInterface {
 }
 ```
 
+### Searching computed data
+
+It is possible to search computed data by:
+
+1. If you don't already have one, define a Laravel attribute accessor method, e.g
+```
+public function getFullNameAttribute(): string
+{
+  return $this->first_name . ' ' . $this->last_name;
+}
+```
+2. If necessary (it usually will be), override the static `searchableGetColumns` method to return any database columns needed to calculate the attribute, e.g.
+```
+public static function searchableGetColumns(string $field): array
+{
+  return $field === 'full_name' ? ['first_name', 'last_name'] : [$field];
+}
+```
+
 ## Commands
 
 ### Update searchable
@@ -169,11 +196,11 @@ The easiest way to make changes is to make the project you're importing the modu
 2. Edit `composer.json` and add
     ```
     "repositories": [
-            {
-                "type": "path",
-                "url": "../laravel-search-encrypted-data"
-            }
-        ]
+      {
+        "type": "path",
+        "url": "../laravel-search-encrypted-data"
+      }
+    ]
     ```
     where "../laravel-search-encrypted-data" is the path to where you have this project checked out
 3. `composer require stickee/laravel-search-encrypted-data`
