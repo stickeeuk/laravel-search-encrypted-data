@@ -3,7 +3,6 @@
 namespace Stickee\LaravelSearchEncryptedData\Test\Unit;
 
 use Illuminate\Support\Facades\DB;
-use Stickee\LaravelSearchEncryptedData\Models\Searchable;
 use Stickee\LaravelSearchEncryptedData\Test\TestCase;
 use Stickee\LaravelSearchEncryptedData\Test\TestModel;
 use Stickee\LaravelSearchEncryptedData\Test\TestModelCaseSensitive;
@@ -197,6 +196,72 @@ class SearchableTest extends TestCase
                 'd409b6361e6b766a42a43caf82a213bae890e3941eaf25d9be420cd6a79a75b8',
                 $model2->getFilterHash('first_name_starts_with_3'),
                 'Invalid hash for first name case sensitive'
+            );
+        });
+    }
+
+    /**
+     * Test data is only updated when dirty
+     */
+    public function test_is_dirty()
+    {
+        DB::transaction(function () {
+            $model = TestModel::create([
+                'first_name' => 'Tester',
+                'email' => 'tester@example.com',
+            ]);
+
+            $searchable = $model->searchables()->where('filter_name', 'first_name_starts_with_3')->firstOrFail();
+            $searchable->filter_value = 'TEST';
+            $searchable->save();
+
+            // The model has not been updated, so the searchable should not update
+            $model->save();
+
+            $searchable->refresh();
+
+            $this->assertSame(
+                'TEST',
+                $searchable->filter_value,
+                'Value updated when not dirty'
+            );
+
+            $model->first_name = 'Tester 2';
+            $model->save();
+
+            $searchable->refresh();
+
+            $this->assertNotSame(
+                'TEST',
+                $searchable->filter_value,
+                'Value did not update when dirty'
+            );
+        });
+    }
+
+    /**
+     * Test computed data always updates
+     */
+    public function test_is_dirty_computed()
+    {
+        DB::transaction(function () {
+            $model = TestModel::create([
+                'first_name' => 'Tester',
+                'email' => 'tester@example.com',
+            ]);
+
+            $searchable = $model->searchables()->where('filter_name', 'computed_starts_with')->firstOrFail();
+            $searchable->filter_value = 'TEST';
+            $searchable->save();
+
+            $model->save();
+
+            $searchable->refresh();
+
+            $this->assertNotSame(
+                'TEST',
+                $searchable->filter_value,
+                'Value did not update'
             );
         });
     }
