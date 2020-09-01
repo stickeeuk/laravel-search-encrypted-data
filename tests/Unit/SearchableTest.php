@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Stickee\LaravelSearchEncryptedData\Test\TestCase;
 use Stickee\LaravelSearchEncryptedData\Test\TestModel;
 use Stickee\LaravelSearchEncryptedData\Test\TestModelCaseSensitive;
+use Stickee\LaravelSearchEncryptedData\Test\TestSoftDeleteModel;
 
 class SearchableTest extends TestCase
 {
@@ -262,6 +263,81 @@ class SearchableTest extends TestCase
                 'TEST',
                 $searchable->filter_value,
                 'Value did not update'
+            );
+        });
+    }
+
+    /**
+     * Test searchables are cleaned up
+     */
+    public function test_deleting()
+    {
+        DB::transaction(function () {
+            $model = TestModel::create([
+                'first_name' => 'Tester',
+                'email' => 'tester@example.com',
+            ]);
+
+            $searchable = $model->searchables()->where('filter_name', 'computed_starts_with')->firstOrFail();
+
+            $model->delete();
+
+            $searchable = $searchable->fresh();
+
+            $this->assertSame(
+                null,
+                $searchable,
+                'Searchable was not deleted'
+            );
+        });
+    }
+
+    /**
+     * Test searchables are not cleaned up when the model is soft deleted
+     */
+    public function test_soft_deleting()
+    {
+        DB::transaction(function () {
+            $model = TestSoftDeleteModel::create([
+                'first_name' => 'Tester',
+                'email' => 'tester@example.com',
+            ]);
+
+            $searchable = $model->searchables()->where('filter_name', 'computed_starts_with')->firstOrFail();
+
+            $model->delete();
+
+            $searchable = $searchable->fresh();
+
+            $this->assertNotSame(
+                null,
+                $searchable,
+                'Searchable was deleted'
+            );
+        });
+    }
+
+    /**
+     * Test searchables are not cleaned up when the model is soft deleted
+     */
+    public function test_force_deleting()
+    {
+        DB::transaction(function () {
+            $model = TestSoftDeleteModel::create([
+                'first_name' => 'Tester',
+                'email' => 'tester@example.com',
+            ]);
+
+            $searchable = $model->searchables()->where('filter_name', 'computed_starts_with')->firstOrFail();
+
+            $model->forceDelete();
+
+            $searchable = $searchable->fresh();
+
+            $this->assertSame(
+                null,
+                $searchable,
+                'Searchable was not deleted'
             );
         });
     }

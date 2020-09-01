@@ -20,6 +20,16 @@ class Tests extends Migration
 
             $table->unique(['email']);
         });
+
+
+        Schema::create('test_soft_delete_models', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('first_name');
+            $table->string('email');
+
+            $table->unique(['email']);
+            $table->softDeletes();
+        });
     }
 
     /**
@@ -29,6 +39,6 @@ class Tests extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('test_models');
+        Schema::dropIfExists('test_soft_delete_models');
     }
 }

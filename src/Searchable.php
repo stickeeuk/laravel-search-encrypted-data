@@ -4,6 +4,7 @@ namespace Stickee\LaravelSearchEncryptedData;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Stickee\LaravelSearchEncryptedData\Contracts\FilterInterface;
@@ -62,9 +63,10 @@ trait Searchable
             }
         });
 
-        // TODO test soft deleting
         self::deleting(function (self $model) {
-            $model->searchables()->delete();
+            if (!in_array(SoftDeletes::class, class_uses($model)) || $model->isForceDeleting()) {
+                $model->searchables()->delete();
+            }
         });
     }
 
