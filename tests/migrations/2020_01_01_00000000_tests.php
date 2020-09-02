@@ -39,6 +39,7 @@ class Tests extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('test_models');
         Schema::dropIfExists('test_soft_delete_models');
     }
 }
