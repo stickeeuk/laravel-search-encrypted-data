@@ -176,7 +176,7 @@ trait Searchable
     /**
      * Get the Eloquent model IDs where the field matches the search value
      *
-     * @param string $filterName The field name
+     * @param string $field The field name
      * @param string $searchValue The search string
      *
      * @return array
