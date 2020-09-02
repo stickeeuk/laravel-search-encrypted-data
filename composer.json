@@ -1,0 +1,46 @@
+{
+    "name": "stickee/laravel-search-encrypted-data",
+    "type": "library",
+    "description": "Stickee Laravel Search Encrypted Data",
+    "version": "1.0.0",
+    "keywords": [
+        "encryption",
+        "search",
+        "laravel"
+    ],
+    "homepage": "https://www.stickee.co.uk",
+    "readme": "README.md",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Stickee\\LaravelSearchEncryptedData\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Stickee\\LaravelSearchEncryptedData\\Test\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Stickee\\LaravelSearchEncryptedData\\ServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^7.2.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.8|^4.0|^5.0",
+        "phpunit/phpunit": "^8.0|^9.0"
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
