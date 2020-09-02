@@ -65,8 +65,8 @@ class TestExecutor extends FiltersExecutor
      *
      * This performs an "or" match, i.e. at least one filter must match
      *
-     * @param string The field to search
-     * @param string The string to search for
+     * @param string $field The field to search
+     * @param string $searchValue The string to search for
      * @param string $className The Eloquent model class name
      * @param array $filterNames The filters to apply
      * @param array $ids The IDs already matched
