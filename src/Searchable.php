@@ -145,7 +145,7 @@ trait Searchable
     /**
      * Get the names of all the filters that apply to a field and search value
      *
-     * @param string $filterName The filter name
+     * @param string $field The filter name
      * @param string $searchValue The search string
      *
      * @return string[]
