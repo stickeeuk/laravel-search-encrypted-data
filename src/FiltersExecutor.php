@@ -2,6 +2,7 @@
 
 namespace Stickee\LaravelSearchEncryptedData;
 
+use Exception;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Stickee\LaravelSearchEncryptedData\Contracts\FiltersExecutorInterface;
@@ -23,6 +24,11 @@ class FiltersExecutor implements FiltersExecutorInterface
     public function execute(SearchableInterface $model, string $field, string $searchValue): array
     {
         $className = get_class($model);
+
+        if (empty($model->getFiltersForField($field))) {
+            throw new Exception('No filters defined for field "' . $field . '" on model ' . get_class($model));
+        }
+
         $filterNames = $model->getApplicableFiltersForField($field, $searchValue);
 
         if (empty($filterNames)) {
@@ -84,10 +90,10 @@ class FiltersExecutor implements FiltersExecutorInterface
         $result = [];
 
         $className::whereIn('id', $ids)
-            ->get(['id', $field])
+            ->get(array_merge(['id'], $className::searchableGetColumns($field)))
             ->each(function ($model) use ($filterNames, $field, $searchValue, &$result) {
                 foreach ($filterNames as $filterName) {
-                    if (!$model->getFilter($filterName)->matches($model->{$field}, $searchValue)) {
+                    if (!$model->getFilter($filterName)->matches((string)$model->{$field}, $searchValue)) {
                         return;
                     }
                 }

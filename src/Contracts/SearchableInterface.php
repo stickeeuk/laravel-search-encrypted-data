@@ -9,6 +9,15 @@ use Stickee\LaravelSearchEncryptedData\Contracts\FilterInterface;
 interface SearchableInterface
 {
     /**
+     * Get the columns to select for searching a particular field
+     *
+     * @param string $field The field to search
+     *
+     * @return string[]
+     */
+    public static function searchableGetColumns(string $field): array;
+
+    /**
      * Get the value hash for a filter
      *
      * @param string $filterName The filter name
