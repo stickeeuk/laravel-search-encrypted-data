@@ -2,12 +2,8 @@
 
 namespace Stickee\LaravelSearchEncryptedData\Test;
 
-use Illuminate\Database\Eloquent\Model;
-use Stickee\LaravelSearchEncryptedData\Contracts\SearchableInterface;
 use Stickee\LaravelSearchEncryptedData\Filters\EndsWith;
-use Stickee\LaravelSearchEncryptedData\Filters\Equals;
 use Stickee\LaravelSearchEncryptedData\Filters\StartsWith;
-use Stickee\LaravelSearchEncryptedData\Searchable;
 use Stickee\LaravelSearchEncryptedData\Test\TestExecutor;
 
 /**
