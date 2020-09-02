@@ -44,13 +44,21 @@ trait Searchable
     {
         self::saved(function (self $model) {
             foreach ($model->searchable ?? [] as $filterName => $filterData) {
-                // TODO check if dirty
-                $model->searchables()->updateOrCreate(
-                    [
-                        'filter_name' => $filterName,
-                        'filter_value' => $model->getFilterHash($filterName),
-                    ]
-                );
+                $field = $filterData[1];
+
+                // isDirty is always false for computed attributes, so check if the attribute exists
+                if ($model->isDirty($field) || !array_key_exists($field, $model->getAttributes())) {
+                    SearchableModel::updateOrCreate(
+                        [
+                            'searchable_type' => get_class($model),
+                            'searchable_id' => $model->id,
+                            'filter_name' => $filterName,
+                        ],
+                        [
+                            'filter_value' => $model->getFilterHash($filterName),
+                        ]
+                    );
+                }
             }
         });
 

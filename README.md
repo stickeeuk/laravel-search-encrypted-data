@@ -104,19 +104,18 @@ The first argument is the field name, the second is the search string.
 Filters are added as an array called "searchable" to the model, e.g.
 ```
 public $searchable = [
-  [StartsWith::class, 'first_name', 4],
-  [StartsWith::class, 'last_name'],
-  [Equals::class, 'email'],
-  [Custom::class, 'some_field', 'something', true, 123],
+  'first_name_starts_with' => [StartsWith::class, 'first_name', 4],
+  'last_name_beginning' => [StartsWith::class, 'last_name'],
+  'exact_email' => [Equals::class, 'email'],
+  'custom' => [Custom::class, 'some_field', 'something', true, 123],
 ];
 ```
 
-The array can be numeric or associative - the key is called the `filterName` internally.
-If you are writing a custom search executor then using an associative array is recommended, else use a numeric array.
+The array key is an arbitrary name to refer to the filter by.
 Each element of the array should be an array containing:
 
 1. The class name of the filter
-2. The field (i.e. model property) that the filter applies to
+2. The field (i.e. model attribute) that the filter applies to
 3. Extra constructor parameters the filter requires (if any)
 
 ### Built-in filters
